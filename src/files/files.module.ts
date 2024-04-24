@@ -11,4 +11,4 @@ import { FilesController } from './files.controller';
     ConfigModule
   ]
 })
-export class FilesModule { }
+export class FilesModule {}

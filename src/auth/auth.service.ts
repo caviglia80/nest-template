@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 import { LoginUserDto, CreateUserDto } from './dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { IsEmail } from 'class-validator';
 
 
 @Injectable()
@@ -16,23 +17,22 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
 
-  async create( createUserDto: CreateUserDto) {
-    
+  async create(createUserDto: CreateUserDto) {
+
     try {
 
       const { password, ...userData } = createUserDto;
-      
+
       const user = this.userRepository.create({
         ...userData,
-        password: bcrypt.hashSync( password, 10 )
+        password: bcrypt.hashSync(password, 10)
       });
 
-      await this.userRepository.save( user )
+      await this.userRepository.save(user)
       delete user.password;
 
       return {
@@ -47,7 +47,7 @@ export class AuthService {
 
   }
 
-  async login( loginUserDto: LoginUserDto ) {
+  async login(loginUserDto: LoginUserDto) {
 
     const { password, email } = loginUserDto;
 
@@ -56,10 +56,10 @@ export class AuthService {
       select: { email: true, password: true, id: true } //! OJO!
     });
 
-    if ( !user ) 
+    if (!user)
       throw new UnauthorizedException('Credentials are not valid (email)');
-      
-    if ( !bcrypt.compareSync( password, user.password ) )
+
+    if (!bcrypt.compareSync(password, user.password))
       throw new UnauthorizedException('Credentials are not valid (password)');
 
     return {
@@ -68,34 +68,25 @@ export class AuthService {
     };
   }
 
-  async checkAuthStatus( user: User ){
-
+  async checkAuthStatus(user: User) {
     return {
       ...user,
       token: this.getJwtToken({ id: user.id })
     };
-
   }
 
-
-  
-  private getJwtToken( payload: JwtPayload ) {
-    const token = this.jwtService.sign( payload );
+  private getJwtToken(payload: JwtPayload) {
+    const token = this.jwtService.sign(payload);
     return token;
-
   }
 
-  private handleDBErrors( error: any ): never {
-
-
-    if ( error.code === '23505' ) 
-      throw new BadRequestException( error.detail );
+  private handleDBErrors(error: any): never {
+    if (error.code === '23505')
+      throw new BadRequestException(error.detail);
 
     console.log(error)
 
     throw new InternalServerErrorException('Please check server logs');
-
   }
-
 
 }

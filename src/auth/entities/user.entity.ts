@@ -4,7 +4,7 @@ import { Product } from '../../products/entities';
 
 @Entity('users')
 export class User {
-    
+
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -34,7 +34,7 @@ export class User {
 
     @OneToMany(
         () => Product,
-        ( product ) => product.user
+        (product) => product.user
     )
     product: Product;
 
@@ -46,7 +46,7 @@ export class User {
 
     @BeforeUpdate()
     checkFieldsBeforeUpdate() {
-        this.checkFieldsBeforeInsert();   
+        this.email = this.email.toLowerCase().trim();
     }
 
 }

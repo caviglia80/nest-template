@@ -27,8 +27,6 @@ export class ProductsService {
 
   ) { }
 
-
-
   async create(createProductDto: CreateProductDto, user: User) {
 
     try {
@@ -58,6 +56,9 @@ export class ProductsService {
       skip: offset,
       relations: {
         images: true,
+      },
+      order: {
+        id: 'ASC'
       }
     })
 

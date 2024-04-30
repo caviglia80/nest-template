@@ -72,11 +72,14 @@ export class AuthService {
   }
 
   private handleDBErrors(error: any): never {
-    if (error.code === '23505')
-      throw new BadRequestException(error.detail);
-
-    console.log(error);
-
-    throw new InternalServerErrorException('Please check server logs');
+    if (error.code === '23505') {
+      throw new BadRequestException('The provided email is already in use.');
+    } else if (error.code === '23514') {
+      throw new BadRequestException('Validation failed for one of the fields.');
+    } else {
+      console.error('Database error:', error);
+      throw new InternalServerErrorException('Unexpected error occurred, please check server logs.');
+    }
   }
+
 }

@@ -19,30 +19,30 @@ export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
   @Post('register')
-  createUser(
+  async createUser(
     @Body() createUserDto: CreateUserDto
   ) {
-    return this.authService.create(createUserDto);
+    return await this.authService.create(createUserDto);
   }
 
   @Post('login')
-  loginUser(
+  async loginUser(
     @Body() loginUserDto: LoginUserDto
   ) {
-    return this.authService.login(loginUserDto);
+    return await this.authService.login(loginUserDto);
   }
 
   @Get('check-status')
   @Auth()
-  checkAuthStatus(
+  async checkAuthStatus(
     @GetUser() user: User
   ) {
-    return this.authService.checkAuthStatus(user);
+    return await this.authService.checkAuthStatus(user);
   }
 
   @Get('private')
   @UseGuards(AuthGuard())
-  testingPrivateRoute(
+  async testingPrivateRoute(
     @Req() request: Express.Request,
     @GetUser() user: User,
     @GetUser('email') userEmail: string,
@@ -56,7 +56,7 @@ export class AuthController {
       userEmail,
       // rawHeaders,
       // headers
-    }
+    };
   }
 
   // @SetMetadata('roles', ['admin','super-user'])
@@ -64,23 +64,24 @@ export class AuthController {
   @Get('private2')
   @RoleProtected(ValidRoles.superUser, ValidRoles.admin)
   @UseGuards(AuthGuard(), UserRoleGuard)
-  privateRoute2(
+  async privateRoute2(
     @GetUser() user: User
   ) {
     return {
       ok: true,
       user
-    }
+    };
   }
 
   @Get('private3')
   @Auth(ValidRoles.admin)
-  privateRoute3(
+  async privateRoute3(
     @GetUser() user: User
   ) {
     return {
       ok: true,
       user
-    }
+    };
   }
+
 }

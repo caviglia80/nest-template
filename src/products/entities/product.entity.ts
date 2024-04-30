@@ -29,7 +29,7 @@ export class Product {
         example: 0,
         description: 'Product price',
     })
-    @Column('float',{
+    @Column('float', {
         default: 0
     })
     price: number;
@@ -66,10 +66,10 @@ export class Product {
     stock: number;
 
     @ApiProperty({
-        example: ['M','XL','XXL'],
+        example: ['M', 'XL', 'XXL'],
         description: 'Product sizes',
     })
-    @Column('text',{
+    @Column('text', {
         array: true
     })
     sizes: string[];
@@ -100,7 +100,7 @@ export class Product {
 
     @ManyToOne(
         () => User,
-        ( user ) => user.product,
+        (user) => user.product,
         { eager: true }
     )
     user: User
@@ -109,24 +109,22 @@ export class Product {
     @BeforeInsert()
     checkSlugInsert() {
 
-        if ( !this.slug ) {
+        if (!this.slug) {
             this.slug = this.title;
         }
 
         this.slug = this.slug
             .toLowerCase()
-            .replaceAll(' ','_')
-            .replaceAll("'",'')
-
+            .replaceAll(' ', '_')
+            .replaceAll("'", '')
     }
 
     @BeforeUpdate()
     checkSlugUpdate() {
         this.slug = this.slug
             .toLowerCase()
-            .replaceAll(' ','_')
-            .replaceAll("'",'')
+            .replaceAll(' ', '_')
+            .replaceAll("'", '')
     }
-
 
 }

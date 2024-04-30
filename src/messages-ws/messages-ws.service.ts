@@ -22,6 +22,7 @@ export class MessagesWsService {
         private readonly userRepository: Repository<User>
     ) { }
 
+
     async registerClient(client: Socket, userId: string) {
 
         const user = await this.userRepository.findOneBy({ id: userId });
@@ -40,13 +41,16 @@ export class MessagesWsService {
         delete this.connectedClients[clientId];
     }
 
+
     getConnectedClients(): string[] {
         return Object.keys(this.connectedClients);
     }
 
+
     getUserFullName(socketId: string) {
         return this.connectedClients[socketId].user.fullName;
     }
+
 
     private checkUserConnection(user: User) {
 

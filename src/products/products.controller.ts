@@ -21,37 +21,40 @@ export class ProductsController {
   @ApiResponse({ status: 201, description: 'Product was created', type: Product })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 403, description: 'Forbidden. Token related.' })
-  create(
+  async create(
     @Body() createProductDto: CreateProductDto,
     @GetUser() user: User,
   ) {
-    return this.productsService.create(createProductDto, user);
+    return await this.productsService.create(createProductDto, user);
   }
 
   @Get()
-  findAll(@Query() paginationDto: PaginationDto) {
+  async findAll(@Query() paginationDto: PaginationDto
+  ) {
     // console.log(paginationDto)
-    return this.productsService.findAll(paginationDto);
+    return await this.productsService.findAll(paginationDto);
   }
 
   @Get(':term')
-  findOne(@Param('term') term: string) {
-    return this.productsService.findOnePlain(term);
+  async findOne(@Param('term') term: string
+  ) {
+    return await this.productsService.findOnePlain(term);
   }
 
   @Patch(':id')
   @Auth(ValidRoles.admin)
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateProductDto: UpdateProductDto,
     @GetUser() user: User,
   ) {
-    return this.productsService.update(id, updateProductDto, user);
+    return await this.productsService.update(id, updateProductDto, user);
   }
 
   @Delete(':id')
   @Auth(ValidRoles.admin)
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.productsService.remove(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string
+  ): Promise<void> {
+    return await this.productsService.remove(id);
   }
 }

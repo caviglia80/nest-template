@@ -24,11 +24,10 @@ export class ProductsService {
     private readonly productImageRepository: Repository<ProductImage>,
 
     private readonly dataSource: DataSource,
-
   ) { }
 
-  async create(createProductDto: CreateProductDto, user: User) {
 
+  async create(createProductDto: CreateProductDto, user: User) {
     try {
       const { images = [], ...productDetails } = createProductDto;
 
@@ -46,7 +45,6 @@ export class ProductsService {
       this.handleDBExceptions(error);
     }
   }
-
 
   async findAll(paginationDto: PaginationDto) {
 
@@ -71,7 +69,6 @@ export class ProductsService {
   async findOne(term: string) {
 
     let product: Product;
-
     if (isUUID(term)) {
       product = await this.productRepository.findOneBy({ id: term });
     } else {
@@ -84,7 +81,6 @@ export class ProductsService {
         .leftJoinAndSelect('prod.images', 'prodImages')
         .getOne();
     }
-
     if (!product)
       throw new NotFoundException(`Product with ${term} not found`);
 
@@ -103,7 +99,6 @@ export class ProductsService {
 
     const { images, ...toUpdate } = updateProductDto;
 
-
     const product = await this.productRepository.preload({ id, ...toUpdate });
 
     if (!product) throw new NotFoundException(`Product with id: ${id} not found`);
@@ -114,16 +109,12 @@ export class ProductsService {
     await queryRunner.startTransaction();
 
     try {
-
       if (images) {
         await queryRunner.manager.delete(ProductImage, { product: { id } });
-
         product.images = images.map(
           image => this.productImageRepository.create({ url: image })
         )
       }
-
-      // await this.productRepository.save( product );
       product.user = user;
 
       await queryRunner.manager.save(product);
@@ -134,7 +125,6 @@ export class ProductsService {
       return this.findOnePlain(id);
 
     } catch (error) {
-
       await queryRunner.rollbackTransaction();
       await queryRunner.release();
       this.handleDBExceptions(error);
@@ -144,16 +134,6 @@ export class ProductsService {
   async remove(id: string) {
     const product = await this.findOne(id);
     await this.productRepository.remove(product);
-  }
-
-  private handleDBExceptions(error: any) {
-
-    if (error.code === '23505')
-      throw new BadRequestException(error.detail);
-
-    this.logger.error(error)
-    // console.log(error)
-    throw new InternalServerErrorException('Unexpected error, check server logs');
   }
 
   async deleteAllProducts() {
@@ -168,6 +148,16 @@ export class ProductsService {
     } catch (error) {
       this.handleDBExceptions(error);
     }
+  }
+
+  private handleDBExceptions(error: any) {
+
+    if (error.code === '23505')
+      throw new BadRequestException(error.detail);
+
+    this.logger.error(error)
+    // console.log(error)
+    throw new InternalServerErrorException('Unexpected error, check server logs');
   }
 
 }

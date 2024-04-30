@@ -17,25 +17,17 @@ export class MessagesWsGateway implements OnGatewayConnection, OnGatewayDisconne
 
   async handleConnection(client: Socket) {
     const token = client.handshake.headers.authentication as string;
-    let payload: JwtPayload;
-
     try {
-      payload = this.jwtService.verify(token);
+      const payload = this.jwtService.verify(token) as JwtPayload;
       await this.messagesWsService.registerClient(client, payload.id);
-
+      this.wss.emit('clients-updated', this.messagesWsService.getConnectedClients());
     } catch (error) {
+      client.emit('error', 'Authentication failed or user not active');
       client.disconnect();
-      return;
     }
-
-    // console.log({ payload })    
-    // console.log('Cliente conectado:', client.id );
-
-
-    this.wss.emit('clients-updated', this.messagesWsService.getConnectedClients());
   }
 
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket) {
     // console.log('Cliente desconectado', client.id )
     this.messagesWsService.removeClient(client.id);
 

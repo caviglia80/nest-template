@@ -16,6 +16,7 @@ export class MessagesWsGateway implements OnGatewayConnection, OnGatewayDisconne
   ) { }
 
   async handleConnection(client: Socket) {
+    console.log('Cliente conectado', client.id)
     const token = client.handshake.headers.authentication as string;
     try {
       const payload = this.jwtService.verify(token) as JwtPayload;
@@ -28,7 +29,7 @@ export class MessagesWsGateway implements OnGatewayConnection, OnGatewayDisconne
   }
 
   async handleDisconnect(client: Socket) {
-    // console.log('Cliente desconectado', client.id )
+    console.log('Cliente desconectado', client.id)
     this.messagesWsService.removeClient(client.id);
 
     this.wss.emit('clients-updated', this.messagesWsService.getConnectedClients());

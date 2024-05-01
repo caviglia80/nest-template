@@ -10,10 +10,10 @@
 2. Clonar el archivo ```.env.template``` y renombrarlo a ```.env```
 3. Cambiar las variables de entorno y recompilar imagen
 ```
-docker-compose -f docker-compose.yaml up --build -d
-
-docker-compose down // Detener y remover los contenedores actuales
-docker-compose down -v // Detener y remover los contenedores actuales y los volumenes
+docker-compose -f docker-compose.yaml up --build -d   // Archivo docker especifico
+docker-compose down                                   // Detener y remover los contenedores actuales
+docker-compose down -v                                // Detener y remover los contenedores actuales y los volumenes
+docker-compose up -d db
 ```
 4. Levantar la base de datos
 ```
